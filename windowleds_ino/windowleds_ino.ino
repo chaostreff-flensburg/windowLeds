@@ -3,7 +3,7 @@ const int arraySize=100;
 const int r=8;
 const int g=9;
 const int b=10;
-const int sensitivity=50;
+const int sensitivity=100;
 
 float rawValueArray[arraySize];
 float commulatedSensorValue=0;
@@ -22,17 +22,16 @@ int bTarget = (int) random(0, 255);
 
 void setup() {
 
-  Serial.begin(9600);
+  Serial.begin(115200);
 
 }
 
 
 void loop() {
   calibration();
-  for(int i=10000;i>0;i--){
+  for(int i=1000;i>0;i--){ //Rekalibrierung etwa alle 2 Minuten
 
     fetchNewSensorValue();
-
     if(commulatedSensorValue<-10){
       jump();
 
@@ -62,7 +61,7 @@ void fetchNewSensorValue(){
     ; 
   }
   commulatedSensorValue=temp/float(arraySize)/float(100);
-  Serial.println(commulatedSensorValue);
+  //Serial.println(commulatedSensorValue);
   /*
  commulatedSensorValue= map(commulatedSensorValue, -3200, 3200, -100, 100);
    Serial.println(commulatedSensorValue);
@@ -71,7 +70,7 @@ void fetchNewSensorValue(){
 }
 
 void calibration(){
-  Serial.println("calibration...");
+  //Serial.println("calibration...");
   sensorMin = 1023;        // minimum sensor value
   sensorMax = 0;           // maximum sensor value
 
@@ -89,38 +88,13 @@ void calibration(){
     }
 
   }
+  /*
   Serial.print("max: ");
   Serial.println(sensorMax);
   Serial.print("min: ");
   Serial.println(sensorMin);
-
+*/
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 void jump() {
