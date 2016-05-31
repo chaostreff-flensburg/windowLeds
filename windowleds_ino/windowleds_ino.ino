@@ -125,7 +125,60 @@ void jump() {
 
 }
 
+void singleColor(int rColor, int gColor, int bColor) {
+    int sleep = 1000;
+   analogWrite(r, rColor);
+   analogWrite(g, gColor);
+   analogWrite(b, bColor);
+  delay(sleep); 
+  }
+  
+  void singleFade(int tempo) {
+   rFade = 0;
+   gFade = 0;
+   bFade = 0;
+   
+   analogWrite(r, rFade); 
+   analogWrite(g, gFade); 
+   analogWrite(b, bFade); 
+  
+  for(var h=0; h < 2; h++) {
+   for(int i = 0; i < 256; i++) {
+    switch(h) {
+     case 0:
+        analogWrite(r, i);
+        delay(tempo);
+       break; 
+       case 1:
+        analogWrite(g, i);
+        delay(tempo);
+       break; 
+       case 2:
+        analogWrite(b, i);
+        delay(tempo);
+       break; 
+    }
+    for(int i = 256; i < 0; i--) {
+    switch(h) {
+     case 0:
+        analogWrite(r, i);
+        delay(tempo);
+       break; 
+       case 1:
+        analogWrite(g, i);
+        delay(tempo);
+       break; 
+       case 2:
+        analogWrite(b, i);
+        delay(tempo);
+       break; 
+    }
+   } 
+  }
+  }
+
 void rainbowRandom() {
+  int sleep = 1;
 
   if(rFade == rTarget) {
     rTarget = (int) random(0, 255);
@@ -169,7 +222,7 @@ void rainbowRandom() {
   analogWrite(g, gFade);
   analogWrite(b, bFade);
 
-  delay(100);
+  delay(sleep);
 
 }
 
