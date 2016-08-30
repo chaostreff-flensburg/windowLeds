@@ -1,15 +1,16 @@
-const int sensorPin = A0;    // pin that the sensor is attached to
+int arrayLength=3;
+const int sensorPin[arrayLength] = {A3, A4, A5};    // pin that the sensor is attached toconst int sensorPin = A0;    // pin that the sensor is attached to
 const int arraySize=100;
 const int r=8;
 const int g=9;
 const int b=10;
 const int sensitivity=100;
 
-float rawValueArray[arraySize];
-float commulatedSensorValue=0;
+float rawValueArray[arrayLength][arraySize];
+float commulatedSensorValue[arrayLength]={0, 0, 0};
 float sensorValue = 0;         // the sensor value
-float sensorMin = 1023;        // minimum sensor value
-float sensorMax = 0;           // maximum sensor value
+float sensorMin[arrayLength] = {1023, 1023, 1023};        // minimum sensor value
+float sensorMax[arrayLength] = {0, 0, 0};           // maximum sensor value
 float temp=0;
 
 int rFade = (int) random(0, 255);
@@ -32,9 +33,8 @@ void loop() {
   for(int i=1000;i>0;i--){ //Rekalibrierung etwa alle 2 Minuten
 
     fetchNewSensorValue();
-    if(commulatedSensorValue<-10){
+    if(commulatedSensorValue[0]<-10){
       jump();
-
     }
     else{
       rainbowRandom();
@@ -46,22 +46,24 @@ void loop() {
 
 
 void fetchNewSensorValue(){
-  for(int i=arraySize; i>0;i--){
-    sensorValue = analogRead(sensorPin);
-
-    sensorValue = map(sensorValue, sensorMin, sensorMax, 0, sensitivity);
-    rawValueArray[i]=sensorValue;    
-
+  for(int h=0; h<arrayLength; h++) {
+    for(int i=arraySize; i>0;i--){
+      sensorValue = analogRead(sensorPin[h]);
+  
+      sensorValue = map(sensorValue, sensorMin[j], sensorMax[j], 0, sensitivity);
+      rawValueArray[h][i]=sensorValue;    
+  
+    }
+    temp=0;
+    for(int a=arraySize;a>0;a--){
+      temp+=rawValueArray[h][a];
+      //Serial.println(temp); 
+      rawValueArray[h][a]=0;
+      ; 
+    }
+    commulatedSensorValue[h]=temp/float(arraySize)/float(100);
   }
-  temp=0;
-  for(int a=arraySize;a>0;a--){
-    temp+=rawValueArray[a];
-    //Serial.println(temp); 
-    rawValueArray[a]=0;
-    ; 
-  }
-  commulatedSensorValue=temp/float(arraySize)/float(100);
-  //Serial.println(commulatedSensorValue);
+  Serial.println(commulatedSensorValue[h]);
   /*
  commulatedSensorValue= map(commulatedSensorValue, -3200, 3200, -100, 100);
    Serial.println(commulatedSensorValue);
@@ -71,22 +73,26 @@ void fetchNewSensorValue(){
 
 void calibration(){
   //Serial.println("calibration...");
-  sensorMin = 1023;        // minimum sensor value
-  sensorMax = 0;           // maximum sensor value
 
-  for(int i =1000;i>0;i--){
-    sensorValue = analogRead(sensorPin);
-
-    // record the maximum sensor value
-    if (sensorValue > sensorMax) {
-      sensorMax = sensorValue;
+  for(int h=0; h<arrayLength; h++) {
+    
+  sensorMin[h] = 1023;        // minimum sensor value
+  sensorMax[h] = 0;           // maximum sensor value
+  
+    for(int i =1000;i>0;i--){
+      sensorValue = analogRead(sensorPin[h]);
+  
+      // record the maximum sensor value
+      if (sensorValue > sensorMax[h]) {
+        sensorMax[h] = sensorValue;
+      }
+  
+      // record the minimum sensor value
+      if (sensorValue < sensorMin[h]) {
+        sensorMin[h] = sensorValue;
+      }
+  
     }
-
-    // record the minimum sensor value
-    if (sensorValue < sensorMin) {
-      sensorMin = sensorValue;
-    }
-
   }
   /*
   Serial.print("max: ");
@@ -172,4 +178,3 @@ void rainbowRandom() {
   delay(100);
 
 }
-
