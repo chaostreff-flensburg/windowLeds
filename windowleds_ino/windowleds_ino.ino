@@ -1,3 +1,4 @@
+uint16_t debug =1;
 int sensorPin[] = {A0, A1, A2};    // pin that the lightsensor is attached to
 int piezoPin[] = {A3};
 const int arraySize=100;
@@ -86,7 +87,9 @@ void fetchNewSensorValue(){
     for(int h=0; h<3; h++) {
   for(int i=arraySize; i>0;i--){
       sensorValue = analogRead(sensorPin[h]);
-  
+      if (i==10&&debug!=0) {
+        Serial.println(sensorValue);
+      }
       sensorValue = map(sensorValue, sensorMin[h], sensorMax[h], 0, sensitivity);
       rawValueArray[i]=sensorValue;    
   
