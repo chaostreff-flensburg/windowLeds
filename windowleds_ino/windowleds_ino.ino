@@ -1,10 +1,10 @@
 uint16_t debug =1;
 int sensorPin[] = {A0, A1, A2};    // pin that the lightsensor is attached to
-int piezoPin[] = {A3};
-const int arraySize=100;
-const int r[] ={5, 11};
-const int g[] ={6, 12};
-const int b[] = {7, 13};
+//int piezoPin[] = {A3};
+const int arraySize=10;
+const int r[] ={6};
+const int g[] ={8};
+const int b[] ={5};
 const int sensitivity=100;
 const int piezoSensitivity = 1000;
 
@@ -39,26 +39,26 @@ void setup() {
 void loop() {
   
   calibration();
-  for(int i=1000;i>0;i--){ //Rekalibrierung etwa alle 2 Minuten
-
-    fetchNewSensorValue();
-    if(commulatedSensorValue[0]>2.5){
-      jump();
+  for(int i=10000;i>0;i--){ //Rekalibrierung etwa alle 2 Minuten
+      if(i%5==0) {
+        fetchNewSensorValue();
+        if(commulatedSensorValue[0]>2.5){
+          jump();
+        }
+        else if(commulatedSensorValue[1]>2.5){
+          singleColor(random(0, 255), random(0, 255), random(0, 255));
+        }
+        else if(commulatedSensorValue[2]>2.5){
+          singleFade(10);
+        }
+        else{
+          rainbowRandom();
+        }
+      } else {
+        rainbowRandom();
+      }
     }
-    else if(commulatedSensorValue[1]>2.5){
-      singleColor(random(0, 255), random(0, 255), random(0, 255));
-    }
-    else if(commulatedSensorValue[2]>2.5){
-      singleFade(10);
-    }
-    else{
-      rainbowRandom();
-    }
-    delay(100);
     //Serial.println(commulatedPiezoValue[0]);
-  }
-  
-  singleColor(random(0, 255), random(0, 255), random(0, 255));
 }
 
 
@@ -87,9 +87,6 @@ void fetchNewSensorValue(){
     for(int h=0; h<3; h++) {
   for(int i=arraySize; i>0;i--){
       sensorValue = analogRead(sensorPin[h]);
-      if (i==10&&debug!=0) {
-        Serial.println(sensorValue);
-      }
       sensorValue = map(sensorValue, sensorMin[h], sensorMax[h], 0, sensitivity);
       rawValueArray[i]=sensorValue;    
   
@@ -101,13 +98,17 @@ void fetchNewSensorValue(){
       rawValueArray[a]=0;
     }
     commulatedSensorValue[h]=temp/float(arraySize)/float(100);
-  Serial.println(commulatedSensorValue[0]);
+  //Serial.println(commulatedSensorValue[0]);
   /*
  commulatedSensorValue= map(commulatedSensorValue, -3200, 3200, -100, 100);
    Serial.println(commulatedSensorValue);
    */
   //commulatedSensorValue=0;
+      if (debug!=0) {
+        Serial.println(commulatedSensorValue[h]);
+      }
   }
+  Serial.println(" ");
 }
 
 void calibration(){
@@ -174,19 +175,19 @@ void jump() {
     if(h==0) {
       light('r', 255);
       delay(sleep);
-      light('r', 0);
+      light('r', 1);
       delay(sleep);
     }
     if(h==1) {
       light('g', 255);
       delay(sleep);
-      light('g', 0);
+      light('g', 1);
       delay(sleep);
     }
     if(h==2) {
       light('b', 255);
       delay(sleep);
-      light('b', 0);
+      light('b', 1);
       delay(sleep);
     }
   }
@@ -202,7 +203,7 @@ void singleColor(int rColor, int gColor, int bColor) {
    light('r', rFade);
    light('g', gFade);
    light('b', bFade);
-   delay(sleep); 
+   delay(sleep);
   }
   
   void singleFade(int tempo) {
@@ -214,40 +215,47 @@ void singleColor(int rColor, int gColor, int bColor) {
    light('g', gFade); 
    light('b', bFade); 
   
-  for(int h=0; h < 2; h++) {
+  for(int h=0; h < 3; h++) {
    for(int i = 0; i < 256; i++) {
     switch(h) {
      case 0:
-        light('r', i);
+         rFade = i;
+        light('r', rFade);
         delay(tempo);
        break; 
        case 1:
-        light('g', i);
+         gFade = i;
+        light('g', gFade);
         delay(tempo);
        break; 
        case 2:
-        light('b', i);
+         bFade = i;
+        light('b', bFade);
         delay(tempo);
        break; 
     }
-    for(int i = 256; i < 0; i--) {
+   }
+    for(int i = 255; i > 1; i--) {
     switch(h) {
      case 0:
-        light('r', i);
+         rFade = i;
+        light('r', rFade);
         delay(tempo);
        break; 
        case 1:
-        light('g', i);
+         gFade = i;
+        light('g', gFade);
         delay(tempo);
        break; 
        case 2:
-        light('b', i);
+         bFade = i;
+        light('b', bFade);
         delay(tempo);
        break; 
     }
    } 
   }
-  }
+  
   }
 
 void rainbowRandom() {
@@ -303,21 +311,15 @@ void light(char color, int brightness) {
    switch(color) {
     
     case 'r':
-              for(int i= 0; i < 2; i++) {
-                analogWrite(r[i], brightness);
-              }
+                analogWrite(r[0], brightness);
                 break;
                 
     case 'g':
-              for(int i= 0; i < 2; i++) {
-                analogWrite(g[i], brightness);
-              }
+                analogWrite(g[0], brightness);
                 break;
                 
     case 'b':
-              for(int i= 0; i < 2; i++) {
-                analogWrite(b[i], brightness);
-              }
+                analogWrite(b[0], brightness);
                 break;
    }
 }
