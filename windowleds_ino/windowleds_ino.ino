@@ -3,8 +3,9 @@ int sensorPin[] = {A0, A1, A2};    // pin that the lightsensor is attached to
 //int piezoPin[] = {A3};
 const int arraySize=10;
 const int r[] ={6};
-const int g[] ={8};
+const int g[] ={7};
 const int b[] ={5};
+const int rx[] = {10, 11};
 const int sensitivity=100;
 const int piezoSensitivity = 1000;
 
@@ -38,10 +39,10 @@ void setup() {
 
 void loop() {
   
-  calibration();
-  for(int i=10000;i>0;i--){ //Rekalibrierung etwa alle 2 Minuten
-      if(i%5==0) {
-        fetchNewSensorValue();
+        int rainbow = digitalRead(rx[0]);
+ 
+        Serial.println(rainbow);
+        /*
         if(commulatedSensorValue[0]>2.5){
           jump();
         }
@@ -57,7 +58,7 @@ void loop() {
       } else {
         rainbowRandom();
       }
-    }
+    */
     //Serial.println(commulatedPiezoValue[0]);
 }
 
